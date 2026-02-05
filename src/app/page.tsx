@@ -209,9 +209,9 @@ export default function LandingPage() {
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 blur-[100px] rounded-full" />
           <div className="max-w-[1200px] mx-auto px-6 relative z-10">
             <div className="text-center mb-16">
-              <span className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-4 block">Lanzamiento</span>
-              <h2 className="text-4xl font-black mb-4">Precios - Próximamente</h2>
-              <p className="text-gray-300">Reserva tu sitio ahora para obtener condiciones especiales de fundador.</p>
+              <span className="text-orange-500 font-bold text-sm tracking-widest uppercase mb-4 block">🚀 Ya Disponible</span>
+              <h2 className="text-4xl font-black mb-4">Elige tu Plan</h2>
+              <p className="text-gray-300">Empieza gratis o desbloquea todo el poder de la IA.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {/* Free Tier */}
@@ -224,32 +224,32 @@ export default function LandingPage() {
                   <li className="flex items-center gap-2">✅ 3 resúmenes IA gratis</li>
                   <li className="flex items-center gap-2 opacity-50">❌ Borradores de propuesta</li>
                 </ul>
-                <button className="mt-auto w-full py-3 rounded-lg border border-white/30 font-bold hover:bg-white/10 transition-colors">Próximamente</button>
+                <Link href="/login" className="mt-auto w-full py-3 rounded-lg border border-white/30 font-bold hover:bg-white/10 transition-colors text-center">Empezar Gratis</Link>
               </div>
-              {/* Pro+ Tier */}
+              {/* Starter Tier */}
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl flex flex-col">
+                <h3 className="text-xl font-bold mb-2">Starter</h3>
+                <div className="text-4xl font-black mb-6">9,90€<span className="text-sm font-normal text-gray-400">/mes</span></div>
+                <ul className="flex flex-col gap-4 mb-8 text-sm">
+                  <li className="flex items-center gap-2">✅ 5 alertas mensuales</li>
+                  <li className="flex items-center gap-2">✅ Resúmenes IA básicos</li>
+                  <li className="flex items-center gap-2">✅ Soporte por email</li>
+                  <li className="flex items-center gap-2 opacity-50">❌ Matching personalizado</li>
+                </ul>
+                <a href="https://buy.stripe.com/6oU00kc0B9q704Jce79AA01" className="mt-auto w-full py-3 rounded-lg border border-white/30 font-bold hover:bg-white/10 transition-colors text-center">Suscribirse</a>
+              </div>
+              {/* Pro Tier */}
               <div className="bg-white text-[#1E3A5F] p-8 rounded-2xl flex flex-col transform md:-translate-y-4 shadow-2xl relative">
                 <div className="absolute top-0 right-8 -translate-y-1/2 bg-orange-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full">Recomendado</div>
-                <h3 className="text-xl font-bold mb-2">Pro+</h3>
-                <div className="text-4xl font-black mb-6">49€<span className="text-sm font-normal text-gray-500">/mes</span></div>
+                <h3 className="text-xl font-bold mb-2">PRO</h3>
+                <div className="text-4xl font-black mb-6">29€<span className="text-sm font-normal text-gray-500">/mes</span></div>
                 <ul className="flex flex-col gap-4 mb-8 text-sm">
                   <li className="flex items-center gap-2">✅ Alertas ilimitadas</li>
                   <li className="flex items-center gap-2">✅ El Radar (IA Selectora)</li>
                   <li className="flex items-center gap-2">✅ Resúmenes IA ilimitados</li>
-                  <li className="flex items-center gap-2">✅ Borradores de propuesta</li>
+                  <li className="flex items-center gap-2">✅ Matching personalizado</li>
                 </ul>
-                <button className="mt-auto w-full py-3 rounded-lg bg-orange-500 text-white font-bold hover:brightness-110 shadow-lg shadow-orange-500/20 transition-all">Reserva Early-Bird</button>
-              </div>
-              {/* Agency Tier */}
-              <div className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl flex flex-col">
-                <h3 className="text-xl font-bold mb-2">Agencia</h3>
-                <div className="text-4xl font-black mb-6">99€<span className="text-sm font-normal text-gray-400">/mes</span></div>
-                <ul className="flex flex-col gap-4 mb-8 text-sm">
-                  <li className="flex items-center gap-2">✅ Todo de Pro+</li>
-                  <li className="flex items-center gap-2">✅ Multi-empresa (hasta 5)</li>
-                  <li className="flex items-center gap-2">✅ Dashboard de equipo</li>
-                  <li className="flex items-center gap-2">✅ Soporte prioritario</li>
-                </ul>
-                <button className="mt-auto w-full py-3 rounded-lg border border-white/30 font-bold hover:bg-white/10 transition-colors">Contactar</button>
+                <a href="https://buy.stripe.com/9B6aEY5Cd0TB9Fjfqj9AA00" className="mt-auto w-full py-3 rounded-lg bg-orange-500 text-white font-bold hover:brightness-110 shadow-lg shadow-orange-500/20 transition-all text-center">Suscribirse a PRO</a>
               </div>
             </div>
           </div>
