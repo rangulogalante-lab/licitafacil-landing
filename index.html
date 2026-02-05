@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>LicitaFácil - Gana Licitaciones Sin Volverte Loco</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;900&amp;display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#1f3b61",
+            "accent-orange": "#FF6B35",
+            "background-light": "#f6f7f8",
+            "background-dark": "#14181e",
+          },
+          fontFamily: {
+            "display": ["Public Sans", "sans-serif"]
+          },
+          borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+        },
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Public Sans', sans-serif;
+    }
+
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
+    }
+
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      z-index: 9999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: #10B981;
+      color: white;
+    }
+
+    .toast.error {
+      background: #EF4444;
+      color: white;
+    }
+
+    /* Loading spinner */
+    .btn-loading {
+      position: relative;
+      color: transparent !important;
+    }
+
+    .btn-loading::after {
+      content: '';
+      position: absolute;
+      width: 1.25rem;
+      height: 1.25rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Wait for Supabase to load
+    let supabaseClient = null;
+
+    function initSupabase() {
+      if (window.supabase) {
+        const SUPABASE_URL = 'https://zdhlzhsoeuoduauelgwi.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpkaGx6aHNvZXVvZHVhdWVsZ3dpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAzMjI2MTksImV4cCI6MjA4NTg5ODYxOX0.M3NTNdaxuk8YPHsUCvIaHU7B1SNIea8ZQIaFxG9Wo5k';
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log('✅ Supabase initialized');
+        return true;
+      }
+      return false;
+    }
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => toast.classList.add('show'), 10);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // Handle form submission
+    async function handleWaitlistSubmit(event, form) {
+      event.preventDefault();
+
+      // Try to init Supabase if not ready
+      if (!supabaseClient) {
+        if (!initSupabase()) {
+          showToast('Cargando... inténtalo de nuevo', 'error');
+          return;
+        }
+      }
+
+      const emailInput = form.querySelector('input[type="email"]');
+      const submitBtn = form.querySelector('button[type="submit"]');
+      const email = emailInput.value.trim();
+
+      if (!email) {
+        showToast('Por favor, introduce tu email', 'error');
+        return;
+      }
+
+      // Get UTM params
+      const urlParams = new URLSearchParams(window.location.search);
+      const metadata = {
+        utm_source: urlParams.get('utm_source'),
+        utm_medium: urlParams.get('utm_medium'),
+        utm_campaign: urlParams.get('utm_campaign'),
+        referrer: document.referrer || null
+      };
+
+      submitBtn.classList.add('btn-loading');
+      submitBtn.disabled = true;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('waitlist')
+          .insert([{ email, metadata }]);
+
+        if (error) {
+          if (error.code === '23505') { // Duplicate
+            showToast('¡Ya estás en la lista! Te avisaremos pronto.', 'success');
+          } else {
+            console.error('Supabase error:', error);
+            throw error;
+          }
+        } else {
+          showToast('🎉 ¡Genial! Te avisaremos cuando lancemos.', 'success');
+        }
+        emailInput.value = '';
+      } catch (err) {
+        console.error('Error:', err);
+        showToast('Algo falló. Inténtalo de nuevo.', 'error');
+      } finally {
+        submitBtn.classList.remove('btn-loading');
+        submitBtn.disabled = false;
+      }
+    }
+
+    // Init forms when DOM ready
+    document.addEventListener('DOMContentLoaded', () => {
+      // Init Supabase
+      if (!initSupabase()) {
+        // Retry after a short delay if SDK not loaded yet
+        setTimeout(initSupabase, 500);
+      }
+
+      // Attach form handlers
+      document.querySelectorAll('form[data-waitlist]').forEach(form => {
+        form.addEventListener('submit', (e) => handleWaitlistSubmit(e, form));
+      });
+
+      console.log('✅ Waitlist forms initialized');
+    });
+  </script>
+</head>
+
+<body
+  class="bg-background-light dark:bg-background-dark text-[#101419] dark:text-gray-100 selection:bg-accent-orange/30">
+  <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+    <!-- Navigation -->
+    <header
+      class="sticky top-0 z-50 w-full border-b border-solid border-[#e9edf1] dark:border-gray-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md">
+      <div class="max-w-[1200px] mx-auto flex items-center justify-between px-6 py-4">
+        <div class="flex items-center gap-2 text-primary dark:text-white">
+          <span class="material-symbols-outlined text-3xl font-bold">radar</span>
+          <h2 class="text-xl font-black tracking-tight">LicitaFácil</h2>
+        </div>
+        <nav class="hidden md:flex items-center gap-8">
+          <a class="text-sm font-semibold hover:text-accent-orange transition-colors" href="#problemas">Problemas</a>
+          <a class="text-sm font-semibold hover:text-accent-orange transition-colors" href="#solucion">Solución</a>
+          <a class="text-sm font-semibold hover:text-accent-orange transition-colors" href="#precios">Precios</a>
+        </nav>
+        <button
+          class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold transition-all hover:bg-primary/90">
+          Acceso Anticipado
+        </button>
+      </div>
+    </header>
+    <main class="flex-1">
+      <!-- Hero Section -->
+      <section class="relative overflow-hidden pt-16 pb-24 md:pt-24 md:pb-32">
+        <div class="max-w-[1200px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div class="flex flex-col gap-8">
+            <div class="flex flex-col gap-4">
+              <span
+                class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase bg-primary/10 text-primary w-fit">
+                Impulsado por IA
+              </span>
+              <h1
+                class="text-[#101419] dark:text-white text-5xl md:text-6xl font-black leading-[1.1] tracking-[-0.033em]">
+                Gana Licitaciones Sin Volverte Loco
+              </h1>
+              <p class="text-lg text-[#5b6f8b] dark:text-gray-400 max-w-[500px]">
+                Simplifica la gestión de licitaciones públicas con nuestra plataforma inteligente. Encuentra, analiza y
+                gestiona oportunidades sin complicaciones.
+              </p>
+            </div>
+            <form data-waitlist class="flex flex-col sm:flex-row gap-3 max-w-[500px]">
+              <div class="flex-1 relative">
+                <span
+                  class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">mail</span>
+                <input
+                  class="w-full h-14 pl-12 pr-4 rounded-lg border-none bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-primary text-sm font-medium"
+                  placeholder="Introduce tu email" type="email" required />
+              </div>
+              <button type="submit"
+                class="h-14 px-8 bg-accent-orange text-white rounded-lg font-bold text-sm whitespace-nowrap hover:brightness-110 shadow-lg shadow-accent-orange/20 transition-all flex items-center justify-center">
+                Quiero Acceso Anticipado
+              </button>
+            </form>
+            <div class="flex items-center gap-4 text-sm text-gray-500">
+              <div class="flex -space-x-2">
+                <img class="size-8 rounded-full border-2 border-white" data-alt="Profile of a platform user"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEVdjUXF6pNuJLuxsa8viP-lKD173D4GknFfV2ctqls8GdWXEkIVUYX1oNi5gs9ESqW4OsI6Y2MDsARqCPbUoVvuLkoXoAaOdNwzP2Em5DFxdtExjt1ZoYBqxG3ye0d-ZtRTWynEabuiI1MSdrJAV0t19RaHy8Iggfgei3vhMgCbRV-fIg1WRJs-ctCPHqIO3LIOWKyQI2ktO_s446glIky0yegjbi97WUF5RDaf6hWanMbif_dC_P6rD9z-Fx1nkedyWJCMlz3g" />
+                <img class="size-8 rounded-full border-2 border-white" data-alt="Profile of a satisfied client"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCRTaQRRLOdrE9vFHUjyovcEDJ40ZMQ8dq7MXaIe32NBErrPpB4HoveoCuxOiHgq_u3MF-SsHw7nb_Jbyg3q8YPlM4SJ7ynbtKy2XtTo6bomPbKKIgfqk1Xy9-gV-5lXuuM-VPE2oqS8XXlLcpgJ7RrF0oQdvc3hI7sOyFqCUJZw_NXIdGtAM8Bgv9P9x6A2W6bBskmA88BwG3ivbSj9g49hLtLIoi3ncc1ibVzLnJPaQ_MvCbcR38Cn0yfXs3R9Is_tCt-CRlmpA" />
+                <img class="size-8 rounded-full border-2 border-white" data-alt="Profile of a business owner"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYqeatceOwDfEnMetUjUbnR53VfYSDr-StXo2Hh3orDdG62VwJWXtqOuMFIS4kOG7nTj_31vI01kdeR4YO8RGdGseB1hEhPQE4AAEOc-n77-465Hv33ios5B1RYFWiGjpma_95b-k_oFsWYMiQ4o-sx9GcDZ6hWqfjgiy_Ex3MJyoaIZNKIyZE7E1q72wTBt6KVnQMytnFFtt67EAGSJuZaPvX6wGOh9UoOvXYrOiSfe0sQVeo437ntMzaSJGwDBtHjuwi0ttX9Q" />
+              </div>
+              <span>+500 empresas esperando el lanzamiento</span>
+            </div>
+          </div>
+          <div class="relative">
+            <div
+              class="w-full aspect-square rounded-3xl bg-gradient-to-br from-primary to-[#2c5282] relative overflow-hidden shadow-2xl"
+              data-alt="Abstract AI data visualization and interface elements">
+              <div
+                class="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.2),transparent)]">
+              </div>
+              <div
+                class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[60%] bg-white/10 backdrop-blur-xl rounded-xl border border-white/20 p-6 flex flex-col gap-4">
+                <div class="h-4 w-1/3 bg-white/20 rounded"></div>
+                <div class="grid grid-cols-2 gap-3 flex-1">
+                  <div class="bg-white/5 rounded-lg border border-white/10"></div>
+                  <div class="bg-white/5 rounded-lg border border-white/10"></div>
+                  <div class="bg-white/5 rounded-lg border border-white/10 col-span-2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Problem Section -->
+      <section class="py-24 bg-white dark:bg-background-dark/50" id="problemas">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <div class="flex flex-col gap-4 mb-16 text-center max-w-2xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-black text-primary dark:text-white">¿Te suena esto?</h2>
+            <p class="text-[#5b6f8b] dark:text-gray-400 text-lg">Sabemos lo frustrante y agotador que puede ser el
+              proceso de licitación pública actual.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div
+              class="group p-8 rounded-2xl border border-[#e9edf1] dark:border-gray-800 hover:border-primary/20 hover:bg-primary/5 transition-all">
+              <div
+                class="size-14 rounded-xl bg-red-100 flex items-center justify-center text-red-600 mb-6 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-3xl">description</span>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Documentos complejos</h3>
+              <p class="text-[#5b6f8b] dark:text-gray-400 text-sm leading-relaxed">Horas interminables intentando
+                descifrar pliegos técnicos y administrativos imposibles de leer.</p>
+            </div>
+            <div
+              class="group p-8 rounded-2xl border border-[#e9edf1] dark:border-gray-800 hover:border-primary/20 hover:bg-primary/5 transition-all">
+              <div
+                class="size-14 rounded-xl bg-orange-100 flex items-center justify-center text-orange-600 mb-6 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-3xl">notification_important</span>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Fechas perdidas</h3>
+              <p class="text-[#5b6f8b] dark:text-gray-400 text-sm leading-relaxed">Alertas de portales oficiales que
+                llegan tarde, se van a spam o simplemente nunca aparecen.</p>
+            </div>
+            <div
+              class="group p-8 rounded-2xl border border-[#e9edf1] dark:border-gray-800 hover:border-primary/20 hover:bg-primary/5 transition-all">
+              <div
+                class="size-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-600 mb-6 group-hover:scale-110 transition-transform">
+                <span class="material-symbols-outlined text-3xl">history</span>
+              </div>
+              <h3 class="text-xl font-bold mb-3">Tiempo perdido</h3>
+              <p class="text-[#5b6f8b] dark:text-gray-400 text-sm leading-relaxed">Burocracia interminable y búsqueda
+                manual que frena el crecimiento real de tu negocio.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Solution Section -->
+      <section class="py-24" id="solucion">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <div class="flex flex-col gap-4 mb-16">
+            <h2 class="text-3xl md:text-4xl font-black text-primary dark:text-white">LicitaFácil: Tu Radar de
+              Oportunidades</h2>
+            <p class="text-[#5b6f8b] dark:text-gray-400 text-lg max-w-2xl">Nuestra tecnología se encarga del trabajo
+              sucio para que tú te centres exclusivamente en presentar la mejor oferta.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div class="flex flex-col gap-6 group">
+              <div
+                class="aspect-[4/3] w-full bg-[#e9edf1] dark:bg-gray-800 rounded-2xl flex items-center justify-center overflow-hidden relative"
+                data-alt="Modern illustration showing a digital radar scanning opportunities">
+                <div class="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent"></div>
+                <span
+                  class="material-symbols-outlined text-6xl text-primary opacity-40 group-hover:scale-110 transition-transform">travel_explore</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">El Radar</h3>
+                <p class="text-[#5b6f8b] dark:text-gray-400 text-sm">IA avanzada que monitoriza miles de fuentes diarias
+                  para encontrar la licitación perfecta según el perfil de tu empresa.</p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-6 group">
+              <div
+                class="aspect-[4/3] w-full bg-[#e9edf1] dark:bg-gray-800 rounded-2xl flex items-center justify-center overflow-hidden relative"
+                data-alt="Illustration of a document being translated into simple insights">
+                <div class="absolute inset-0 bg-gradient-to-tr from-accent-orange/10 to-transparent"></div>
+                <span
+                  class="material-symbols-outlined text-6xl text-accent-orange opacity-40 group-hover:scale-110 transition-transform">translate</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">El Traductor</h3>
+                <p class="text-[#5b6f8b] dark:text-gray-400 text-sm">Simplificamos el complejo lenguaje jurídico y
+                  técnico a términos claros y acciones concretas para tu equipo.</p>
+              </div>
+            </div>
+            <div class="flex flex-col gap-6 group">
+              <div
+                class="aspect-[4/3] w-full bg-[#e9edf1] dark:bg-gray-800 rounded-2xl flex items-center justify-center overflow-hidden relative"
+                data-alt="Graphic showing an automated document assistant organizer">
+                <div class="absolute inset-0 bg-gradient-to-tr from-green-500/10 to-transparent"></div>
+                <span
+                  class="material-symbols-outlined text-6xl text-green-600 opacity-40 group-hover:scale-110 transition-transform">smart_toy</span>
+              </div>
+              <div>
+                <h3 class="text-xl font-bold mb-2">El Asistente</h3>
+                <p class="text-[#5b6f8b] dark:text-gray-400 text-sm">Gestión centralizada y automatizada de toda tu
+                  documentación, certificados y plazos de entrega.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Pricing Section -->
+      <section class="py-24 bg-primary text-white overflow-hidden relative" id="precios">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-accent-orange/10 blur-[100px] rounded-full"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-white/5 blur-[100px] rounded-full"></div>
+        <div class="max-w-[1200px] mx-auto px-6 relative z-10">
+          <div class="text-center mb-16">
+            <span class="text-accent-orange font-bold text-sm tracking-widest uppercase mb-4 block">Lanzamiento</span>
+            <h2 class="text-4xl font-black mb-4">Precios - Próximamente</h2>
+            <p class="text-gray-300">Reserva tu sitio ahora para obtener condiciones especiales de fundador.</p>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Free Tier -->
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl flex flex-col">
+              <h3 class="text-xl font-bold mb-2">Gratis</h3>
+              <div class="text-4xl font-black mb-6">0€<span class="text-sm font-normal text-gray-400"> para
+                  siempre</span></div>
+              <ul class="flex flex-col gap-4 mb-8 text-sm">
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-400 text-lg">check_circle</span> 1 alerta diaria</li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-400 text-lg">check_circle</span> Búsqueda manual básica
+                </li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-400 text-lg">check_circle</span> 3 resúmenes IA gratis
+                </li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-gray-400 text-lg">block</span> Borradores de propuesta</li>
+              </ul>
+              <button
+                class="mt-auto w-full py-3 rounded-lg border border-white/30 font-bold hover:bg-white/10 transition-colors">Próximamente</button>
+            </div>
+            <!-- Pro+ Tier -->
+            <div
+              class="bg-white text-primary p-8 rounded-2xl flex flex-col transform md:-translate-y-4 shadow-2xl relative">
+              <div
+                class="absolute top-0 right-8 -translate-y-1/2 bg-accent-orange text-white text-[10px] font-black uppercase px-3 py-1 rounded-full">
+                Recomendado</div>
+              <h3 class="text-xl font-bold mb-2">Pro+</h3>
+              <div class="text-4xl font-black mb-6">49€<span class="text-sm font-normal text-gray-500">/mes</span></div>
+              <ul class="flex flex-col gap-4 mb-8 text-sm">
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary text-lg">check_circle</span> Alertas ilimitadas</li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary text-lg">check_circle</span> El Radar (IA Selectora)
+                </li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary text-lg">check_circle</span> Resúmenes IA ilimitados
+                </li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-primary text-lg">check_circle</span> Borradores de propuesta
+                </li>
+              </ul>
+              <button
+                class="mt-auto w-full py-3 rounded-lg bg-accent-orange text-white font-bold hover:brightness-110 shadow-lg shadow-accent-orange/20 transition-all">Reserva
+                Early-Bird</button>
+            </div>
+            <!-- Agency Tier -->
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl flex flex-col">
+              <h3 class="text-xl font-bold mb-2">Agencia</h3>
+              <div class="text-4xl font-black mb-6">99€<span class="text-sm font-normal text-gray-400">/mes</span></div>
+              <ul class="flex flex-col gap-4 mb-8 text-sm">
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-400 text-lg">check_circle</span> Todo de Pro+</li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-400 text-lg">check_circle</span> Multi-empresa (hasta 5)
+                </li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-400 text-lg">check_circle</span> Dashboard de equipo
+                </li>
+                <li class="flex items-center gap-2"><span
+                    class="material-symbols-outlined text-green-400 text-lg">check_circle</span> Soporte prioritario
+                </li>
+              </ul>
+              <button
+                class="mt-auto w-full py-3 rounded-lg border border-white/30 font-bold hover:bg-white/10 transition-colors">Contactar</button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <!-- Final CTA Section -->
+      <section class="py-24 bg-background-light dark:bg-background-dark">
+        <div class="max-w-[1200px] mx-auto px-6">
+          <div
+            class="bg-primary/5 dark:bg-white/5 rounded-[2.5rem] p-12 md:p-20 text-center border border-primary/10 dark:border-white/10">
+            <h2 class="text-3xl md:text-5xl font-black text-primary dark:text-white mb-6">¿Preparado para ganar más?
+            </h2>
+            <p class="text-lg text-[#5b6f8b] dark:text-gray-400 mb-10 max-w-xl mx-auto">Únete a la lista de espera hoy y
+              recibe un 50% de descuento de por vida cuando lancemos oficialmente.</p>
+            <form data-waitlist class="flex flex-col sm:flex-row gap-3 max-w-[550px] mx-auto">
+              <input
+                class="flex-1 h-14 px-6 rounded-xl border-none bg-white dark:bg-gray-800 shadow-sm focus:ring-2 focus:ring-primary text-sm font-medium"
+                placeholder="Tu correo electrónico profesional" type="email" required />
+              <button type="submit"
+                class="h-14 px-10 bg-accent-orange text-white rounded-xl font-bold text-sm hover:brightness-110 transition-all flex items-center justify-center">Apuntarme</button>
+            </form>
+            <p class="mt-6 text-xs text-gray-400">No enviamos spam. Solo noticias importantes sobre el lanzamiento.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- Footer -->
+    <footer class="border-t border-[#e9edf1] dark:border-gray-800 py-12">
+      <div class="max-w-[1200px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex items-center gap-2 text-primary dark:text-white opacity-70">
+          <span class="material-symbols-outlined text-2xl font-bold">radar</span>
+          <h2 class="text-lg font-black tracking-tight">LicitaFácil</h2>
+        </div>
+        <div class="flex gap-8 text-sm text-gray-500 dark:text-gray-400">
+          <a class="hover:text-primary transition-colors" href="#">Privacidad</a>
+          <a class="hover:text-primary transition-colors" href="#">Términos</a>
+          <a class="hover:text-primary transition-colors" href="#">Contacto</a>
+        </div>
+        <div class="text-sm text-gray-400">
+          © 2024 LicitaFácil AI. Hecho con ❤️ para licitadores.
+        </div>
+      </div>
+    </footer>
+  </div>
+</body>
+
+</html>
