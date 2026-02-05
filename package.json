@@ -1,0 +1,16 @@
+{
+    "name": "licitafacil-landing",
+    "version": "1.0.0",
+    "description": "Landing page for LicitaFacil - AI assistant for public tenders",
+    "scripts": {
+        "start": "npx serve .",
+        "build": "echo 'Static site - no build needed'"
+    },
+    "keywords": [
+        "landing",
+        "licitaciones",
+        "spain"
+    ],
+    "author": "LicitaFacil",
+    "license": "MIT"
+}
