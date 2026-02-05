@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LicitaFácil - Tu Radar de Licitaciones",
-  description: "Encuentra y gana licitaciones públicas con ayuda de la IA",
+  title: "LicitaFlash - Licitaciones en Tiempo Real",
+  description: "Recibe alertas instantáneas de licitaciones públicas con IA. Nunca más pierdas una oportunidad.",
 };
 
 export default function RootLayout({

@@ -35,7 +35,7 @@ export default async function DashboardPage() {
             {/* Header */}
             <header className="bg-white border-b border-slate-200">
                 <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <h1 className="text-xl font-bold text-slate-800">LicitaFácil</h1>
+                    <h1 className="text-xl font-bold text-slate-800">LicitaFlash</h1>
                     <div className="flex items-center gap-4">
                         <span className="text-sm text-slate-600">{user.email}</span>
                         <Link href="/settings" className="text-sm text-blue-600 hover:text-blue-700">

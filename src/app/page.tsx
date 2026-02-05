@@ -82,7 +82,7 @@ export default function LandingPage() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-xl shadow-lg shadow-blue-500/25">
               📡
             </div>
-            <h2 className="text-xl font-black tracking-tight">LicitaFácil</h2>
+            <h2 className="text-xl font-black tracking-tight">LicitaFlash</h2>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a className="text-sm font-medium text-gray-400 hover:text-white transition-colors" href="#problema">El Problema</a>
@@ -195,7 +195,7 @@ export default function LandingPage() {
                       <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                       <div className="w-3 h-3 rounded-full bg-green-500/80" />
                     </div>
-                    <div className="flex-1 text-center text-xs text-gray-500">LicitaFácil Dashboard</div>
+                    <div className="flex-1 text-center text-xs text-gray-500">LicitaFlash Dashboard</div>
                   </div>
                   <div className="p-6 grid grid-cols-3 gap-4">
                     <div className="col-span-2 space-y-4">
@@ -470,7 +470,7 @@ export default function LandingPage() {
                   ))}
                 </div>
                 <p className="text-gray-300 text-sm mb-6 italic">
-                  "Hemos ganado 3 contratos en 2 meses que nunca habríamos encontrado sin LicitaFácil. ROI brutal."
+                  "Hemos ganado 3 contratos en 2 meses que nunca habríamos encontrado sin LicitaFlash. ROI brutal."
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center font-bold">AR</div>
@@ -636,7 +636,7 @@ export default function LandingPage() {
                 ¿Listo para ganar más licitaciones?
               </h2>
               <p className="text-xl text-gray-400 mb-10">
-                Únete a las +847 empresas que ya usan LicitaFácil para encontrar y ganar contratos públicos.
+                Únete a las +847 empresas que ya usan LicitaFlash para encontrar y ganar contratos públicos.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <a
@@ -665,7 +665,7 @@ export default function LandingPage() {
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-sm">
                 📡
               </div>
-              <span className="font-bold">LicitaFácil</span>
+              <span className="font-bold">LicitaFlash</span>
             </div>
             <div className="flex gap-8 text-sm text-gray-500">
               <a className="hover:text-white transition-colors" href="#">Privacidad</a>
@@ -673,7 +673,7 @@ export default function LandingPage() {
               <a className="hover:text-white transition-colors" href="#">Contacto</a>
             </div>
             <div className="text-sm text-gray-600">
-              © 2025 LicitaFácil. Hecho en España 🇪🇸
+              © 2025 LicitaFlash. Hecho en España 🇪🇸
             </div>
           </div>
         </div>

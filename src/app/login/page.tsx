@@ -70,7 +70,7 @@ export default function LoginPage() {
                         <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg shadow-blue-500/25">
                             📡
                         </div>
-                        <span className="text-2xl font-black text-white tracking-tight">LicitaFácil</span>
+                        <span className="text-2xl font-black text-white tracking-tight">LicitaFlash</span>
                     </Link>
                 </div>
 
