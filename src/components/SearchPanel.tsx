@@ -30,15 +30,16 @@ export default function SearchPanel({ userPlan, initialLicitaciones }: SearchPan
 
     // Feature limits based on plan
     const limits = {
-        free: { searches: 5, summaries: 3, alerts: 5 },
-        pro: { searches: Infinity, summaries: Infinity, alerts: Infinity },
-        ultra: { searches: Infinity, summaries: Infinity, alerts: Infinity }
+        free: { summaries: 3, proposals: 0 },
+        pro: { summaries: 20, proposals: 10 },
+        ultra: { summaries: Infinity, proposals: Infinity }
     }
 
     const canUseSummary = userPlan !== 'free'
     const canUseMatchScore = userPlan !== 'free'
     const canUseProposal = userPlan !== 'free'
     const canUseWhatsApp = userPlan === 'ultra'
+    const isUnlimited = userPlan === 'ultra'
 
     const handleSearch = async () => {
         if (!query && !tipo) return
@@ -246,7 +247,7 @@ export default function SearchPanel({ userPlan, initialLicitaciones }: SearchPan
 
                                         {canUseSummary ? (
                                             <button className="px-4 py-2 text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg transition-colors font-medium">
-                                                🤖 Resumen IA
+                                                🤖 Resumen IA {!isUnlimited && <span className="text-xs opacity-70">(20/mes)</span>}
                                             </button>
                                         ) : (
                                             <button className="px-4 py-2 text-sm bg-slate-50 text-slate-400 rounded-lg cursor-not-allowed flex items-center gap-1">
@@ -257,7 +258,7 @@ export default function SearchPanel({ userPlan, initialLicitaciones }: SearchPan
 
                                         {canUseProposal ? (
                                             <button className="px-4 py-2 text-sm bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg transition-colors font-medium">
-                                                ✍️ Borrador propuesta
+                                                ✍️ Borrador {!isUnlimited && <span className="text-xs opacity-70">(10/mes)</span>}
                                             </button>
                                         ) : (
                                             <button className="px-4 py-2 text-sm bg-slate-50 text-slate-400 rounded-lg cursor-not-allowed flex items-center gap-1">

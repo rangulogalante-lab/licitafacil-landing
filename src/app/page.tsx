@@ -555,7 +555,11 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-orange-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Resúmenes IA ilimitados</span>
+                    <span className="text-gray-300">20 resúmenes IA/mes</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <span className="text-orange-400 mt-0.5">✓</span>
+                    <span className="text-gray-300">10 borradores de propuesta/mes</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-orange-400 mt-0.5">✓</span>
@@ -564,10 +568,6 @@ export default function LandingPage() {
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-orange-400 mt-0.5">✓</span>
                     <span className="text-gray-300">Análisis de competencia</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <span className="text-orange-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Borradores de propuesta</span>
                   </li>
                 </ul>
                 <a
@@ -590,7 +590,7 @@ export default function LandingPage() {
                 <ul className="space-y-3 mb-8 flex-1">
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-purple-400 mt-0.5">✓</span>
-                    <span className="text-white font-medium">Todo en Pro+ más:</span>
+                    <span className="text-white font-medium">Resúmenes y borradores ILIMITADOS</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-purple-400 mt-0.5">✓</span>
