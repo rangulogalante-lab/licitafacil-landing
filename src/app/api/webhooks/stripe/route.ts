@@ -2,20 +2,35 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2026-01-28.clover'
-})
+// Initialize Stripe only when needed (not at build time)
+function getStripe() {
+    if (!process.env.STRIPE_SECRET_KEY) {
+        throw new Error('STRIPE_SECRET_KEY is not set')
+    }
+    return new Stripe(process.env.STRIPE_SECRET_KEY, {
+        apiVersion: '2026-01-28.clover'
+    })
+}
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+function getSupabase() {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        throw new Error('Supabase environment variables not set')
+    }
+    return createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+    )
+}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || ''
+
 
 export async function POST(req: NextRequest) {
     const body = await req.text()
     const signature = req.headers.get('stripe-signature')!
+
+    const stripe = getStripe()
+    const supabase = getSupabase()
 
     let event: Stripe.Event
 
@@ -38,7 +53,7 @@ export async function POST(req: NextRequest) {
                     .from('users')
                     .update({
                         subscription_status: 'active',
-                        subscription_plan: session.amount_total === 2900 ? 'pro' : 'starter',
+                        subscription_plan: session.amount_total === 8999 ? 'ultra' : 'pro',
                         stripe_customer_id: session.customer as string,
                         subscription_updated_at: new Date().toISOString()
                     })
