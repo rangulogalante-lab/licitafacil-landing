@@ -504,28 +504,28 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
               {/* Free */}
               <div className="rounded-2xl border border-white/10 bg-white/5 p-8 flex flex-col">
-                <h3 className="text-xl font-bold mb-1">Gratis</h3>
+                <h3 className="text-xl font-bold mb-1">Free</h3>
                 <p className="text-gray-500 text-sm mb-6">Para explorar</p>
-                <div className="text-4xl font-black mb-6">
-                  0€
-                  <span className="text-base font-normal text-gray-500">/mes</span>
+                <div className="flex items-baseline gap-2 mb-6">
+                  <span className="text-4xl font-black text-white">0€</span>
+                  <span className="text-base font-normal text-gray-500">/siempre</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-green-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">3 alertas diarias</span>
+                    <span className="text-gray-300">5 alertas mensuales</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-green-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Búsqueda manual básica</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <span className="text-green-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">5 resúmenes IA/mes</span>
+                    <span className="text-gray-300">3 resúmenes IA/mes</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm text-gray-500">
                     <span className="mt-0.5">✕</span>
                     <span>Match Score personalizado</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-gray-500">
+                    <span className="mt-0.5">✕</span>
+                    <span>Análisis de competencia</span>
                   </li>
                 </ul>
                 <Link
@@ -536,57 +536,26 @@ export default function LandingPage() {
                 </Link>
               </div>
 
-              {/* Starter */}
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-8 flex flex-col">
-                <h3 className="text-xl font-bold mb-1">Starter</h3>
-                <p className="text-gray-500 text-sm mb-6">Para autónomos</p>
-                <div className="flex items-baseline gap-2 mb-6">
-                  <span className="text-lg text-gray-500 line-through">19,90€</span>
-                  <span className="text-4xl font-black text-white">9,90€</span>
-                  <span className="text-base font-normal text-gray-500">/mes</span>
-                </div>
-                <ul className="space-y-3 mb-8 flex-1">
-                  <li className="flex items-start gap-2 text-sm">
-                    <span className="text-green-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Alertas ilimitadas</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <span className="text-green-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Resúmenes IA ilimitados</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <span className="text-green-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Filtros avanzados</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <span className="text-green-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Soporte por email</span>
-                  </li>
-                </ul>
-                <a
-                  href="https://buy.stripe.com/6oU00kc0B9q704Jce79AA01"
-                  className="w-full py-3 rounded-xl border border-white/20 text-center font-semibold hover:bg-white/5 transition-colors"
-                >
-                  Suscribirse
-                </a>
-              </div>
-
-              {/* PRO - Featured */}
+              {/* Pro+ - Featured */}
               <div className="relative rounded-2xl border-2 border-orange-500/50 bg-gradient-to-b from-orange-500/10 to-transparent p-8 flex flex-col">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-orange-500 to-red-500 rounded-full text-xs font-bold uppercase tracking-wider">
                   Más Popular
                 </div>
-                <h3 className="text-xl font-bold mb-1">PRO</h3>
-                <p className="text-gray-500 text-sm mb-6">Para equipos ganadores</p>
+                <h3 className="text-xl font-bold mb-1">Pro+</h3>
+                <p className="text-gray-500 text-sm mb-6">Para profesionales</p>
                 <div className="flex items-baseline gap-2 mb-6">
-                  <span className="text-lg text-gray-500 line-through">58€</span>
-                  <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400">29€</span>
+                  <span className="text-lg text-gray-500 line-through">59,99€</span>
+                  <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-400">29,99€</span>
                   <span className="text-base font-normal text-gray-500">/mes</span>
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-orange-400 mt-0.5">✓</span>
-                    <span className="text-white font-medium">Todo de Starter +</span>
+                    <span className="text-white font-medium">Alertas ilimitadas</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <span className="text-orange-400 mt-0.5">✓</span>
+                    <span className="text-gray-300">Resúmenes IA ilimitados</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-orange-400 mt-0.5">✓</span>
@@ -594,22 +563,57 @@ export default function LandingPage() {
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-orange-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Borradores de propuesta</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-sm">
-                    <span className="text-orange-400 mt-0.5">✓</span>
                     <span className="text-gray-300">Análisis de competencia</span>
                   </li>
                   <li className="flex items-start gap-2 text-sm">
                     <span className="text-orange-400 mt-0.5">✓</span>
-                    <span className="text-gray-300">Soporte prioritario</span>
+                    <span className="text-gray-300">Borradores de propuesta</span>
                   </li>
                 </ul>
                 <a
-                  href="https://buy.stripe.com/9B6aEY5Cd0TB9Fjfqj9AA00"
+                  href="https://buy.stripe.com/eVq5kE0hT0TB04J7XR9AA02"
                   className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 text-center font-bold hover:brightness-110 transition-all shadow-lg shadow-orange-500/25"
                 >
-                  Suscribirse a PRO
+                  Suscribirse a Pro+
+                </a>
+              </div>
+
+              {/* Ultra */}
+              <div className="rounded-2xl border border-purple-500/30 bg-gradient-to-b from-purple-500/5 to-transparent p-8 flex flex-col">
+                <h3 className="text-xl font-bold mb-1">Ultra</h3>
+                <p className="text-gray-500 text-sm mb-6">Para equipos ganadores</p>
+                <div className="flex items-baseline gap-2 mb-6">
+                  <span className="text-lg text-gray-500 line-through">179,99€</span>
+                  <span className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">89,99€</span>
+                  <span className="text-base font-normal text-gray-500">/mes</span>
+                </div>
+                <ul className="space-y-3 mb-8 flex-1">
+                  <li className="flex items-start gap-2 text-sm">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span className="text-white font-medium">Todo en Pro+ más:</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span className="text-gray-300">Dashboard multi-usuario</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span className="text-gray-300">Alertas por WhatsApp</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span className="text-gray-300">API access</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <span className="text-purple-400 mt-0.5">✓</span>
+                    <span className="text-gray-300">Soporte prioritario 24/7</span>
+                  </li>
+                </ul>
+                <a
+                  href="https://buy.stripe.com/28EeVe6Ghaub2cRba39AA03"
+                  className="w-full py-3 rounded-xl border border-purple-500/50 text-center font-semibold hover:bg-purple-500/10 transition-colors text-purple-300"
+                >
+                  Suscribirse a Ultra
                 </a>
               </div>
             </div>
