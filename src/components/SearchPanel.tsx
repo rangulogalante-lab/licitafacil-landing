@@ -212,11 +212,11 @@ export default function SearchPanel({ userPlan, initialLicitaciones }: SearchPan
                                                 }) || 'A consultar'}
                                             </p>
                                             <p className="text-sm text-slate-500">
-                                                Límite: {new Date(lic.fecha_limite).toLocaleDateString('es-ES', {
+                                                Límite: {lic.fecha_limite ? new Date(lic.fecha_limite).toLocaleDateString('es-ES', {
                                                     day: 'numeric',
                                                     month: 'short',
                                                     year: 'numeric'
-                                                })}
+                                                }) : 'Ver detalles'}
                                             </p>
 
                                             {/* Match Score - Premium Feature */}
