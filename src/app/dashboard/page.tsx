@@ -1,151 +1,125 @@
-import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import SearchPanel from '@/components/SearchPanel'
+import { createClient } from '@/lib/supabase/server';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
+import { StatsGrid } from '@/components/StatsCards';
+import ActivityFeed from '@/components/ActivityFeed';
+import RecommendedTenders from '@/components/RecommendedTenders';
 
 export default async function DashboardPage() {
-    const supabase = await createClient()
+    const supabase = await createClient();
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+        data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
-        redirect('/login')
+        redirect('/login');
     }
 
-    // Get user's subscription status (mock for now - would come from profiles table)
     const { data: profile } = await supabase
         .from('profiles')
         .select('subscription_status, subscription_plan')
         .eq('id', user.id)
-        .single()
+        .single();
 
-    // Determine user plan
-    let userPlan: 'free' | 'pro' | 'ultra' = 'free'
+    let userPlan: 'free' | 'pro' | 'ultra' = 'free';
     if (profile?.subscription_status === 'active') {
         if (profile.subscription_plan === 'ultra') {
-            userPlan = 'ultra'
-        } else if (profile.subscription_plan === 'pro' || profile.subscription_plan === 'pro+') {
-            userPlan = 'pro'
+            userPlan = 'ultra';
+        } else if (
+            profile.subscription_plan === 'pro' ||
+            profile.subscription_plan === 'pro+'
+        ) {
+            userPlan = 'pro';
         }
     }
 
-    // Get user's alertas count
-    const { count: alertasCount } = await supabase
-        .from('alertas')
-        .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-
-    // Get recent licitaciones
-    const { data: licitaciones } = await supabase
-        .from('licitaciones')
-        .select('*')
-        .eq('estado', 'abierta')
-        .order('fecha_publicacion', { ascending: false })
-        .limit(10)
-
-    // Get total active licitaciones count
     const { count: totalLicitaciones } = await supabase
         .from('licitaciones')
         .select('*', { count: 'exact', head: true })
+        .eq('estado', 'abierta');
+
+    const { data: recommendedLicitaciones } = await supabase
+        .from('licitaciones')
+        .select('*')
         .eq('estado', 'abierta')
+        .order('presupuesto_base', { ascending: false, nullsFirst: false })
+        .order('fecha_publicacion', { ascending: false })
+        .limit(5);
 
-    const planLabels = {
-        free: 'Free',
-        pro: 'Pro+',
-        ultra: 'Ultra'
-    }
+    const stats = {
+        activeTenders: totalLicitaciones || 0,
+        upcomingDeadlines: 3,
+        submittedProposals: 5,
+        winRate: 24,
+    };
 
-    const planColors = {
-        free: 'text-slate-600',
-        pro: 'text-orange-500',
-        ultra: 'text-purple-500'
-    }
+    const recentActivities = [
+        { id: '1', type: 'proposal' as const, title: 'Propuesta enviada', description: 'Suministro de equipos informáticos', time: 'Hace 2 horas' },
+        { id: '2', type: 'ai' as const, title: 'Análisis IA completado', description: 'Servicios de consultoría', time: 'Hace 5 horas' },
+        { id: '3', type: 'alert' as const, title: 'Nueva licitación relevante', description: 'Obra de mantenimiento vial', time: 'Ayer' },
+        { id: '4', type: 'deadline' as const, title: 'Fecha límite próxima', description: 'Expediente 2026/1234', time: 'En 3 días' },
+        { id: '5', type: 'draft' as const, title: 'Borrador guardado', description: 'Propuesta técnica para...', time: 'Hace 2 días' },
+    ];
+
+    const planBadge = {
+        free: { label: 'Free', class: 'bg-slate-800 text-slate-200' },
+        pro: { label: 'Pro+', class: 'bg-orange-900/50 text-orange-400' },
+        ultra: { label: 'Ultra', class: 'bg-purple-900/50 text-purple-400' },
+    };
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Header */}
-            <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
-                <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2">
-                        <span className="text-2xl">⚡</span>
-                        <h1 className="text-xl font-bold text-slate-800">LicitaFlash</h1>
-                    </Link>
-                    <div className="flex items-center gap-4">
-                        <span className={`text-sm font-medium px-3 py-1 rounded-full ${userPlan === 'free'
-                            ? 'bg-slate-100 text-slate-600'
-                            : userPlan === 'ultra'
-                                ? 'bg-purple-100 text-purple-700'
-                                : 'bg-orange-100 text-orange-700'
-                            }`}>
-                            {planLabels[userPlan]}
+        <div className="p-4 md:p-8 space-y-8 scroll-smooth">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div className="flex items-center gap-3 mb-2">
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+                            Dashboard
+                        </h1>
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${planBadge[userPlan].class}`}>
+                            {planBadge[userPlan].label}
                         </span>
-                        <span className="text-sm text-slate-600 hidden md:block">{user.email}</span>
-                        <Link href="/settings" className="text-sm text-blue-600 hover:text-blue-700">
-                            ⚙️
-                        </Link>
-                        <form action="/auth/signout" method="post">
-                            <button className="text-sm text-slate-500 hover:text-slate-700">
-                                Salir
-                            </button>
-                        </form>
                     </div>
-                </div>
-            </header>
-
-            {/* Main Content */}
-            <main className="container mx-auto px-4 py-8">
-                {/* Welcome Banner */}
-                <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-2">
-                        ¡Hola! 👋
-                    </h2>
-                    <p className="text-slate-600">
-                        Encuentra las mejores licitaciones para tu negocio
+                    <p className="text-[#94a3b8] text-sm md:text-base">
+                        Bienvenido de vuelta. Aquí tienes un resumen de tu actividad.
                     </p>
                 </div>
-
-                {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                        <p className="text-sm text-slate-500 mb-1">Licitaciones Activas</p>
-                        <p className="text-2xl font-bold text-slate-800">{totalLicitaciones?.toLocaleString() || 0}</p>
-                    </div>
-                    <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                        <p className="text-sm text-slate-500 mb-1">Tus Alertas</p>
-                        <p className="text-2xl font-bold text-blue-600">{alertasCount || 0}</p>
-                    </div>
-                    <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                        <p className="text-sm text-slate-500 mb-1">Resúmenes IA</p>
-                        <p className="text-2xl font-bold text-green-600">
-                            {userPlan === 'free' ? '3/mes' : '∞'}
-                        </p>
-                    </div>
-                    <div className="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                        <p className="text-sm text-slate-500 mb-1">Tu Plan</p>
-                        <p className={`text-2xl font-bold ${planColors[userPlan]}`}>
-                            {planLabels[userPlan]}
-                        </p>
-                        {userPlan === 'free' && (
-                            <Link href="/#pricing" className="text-xs text-orange-600 hover:underline">
-                                Mejorar →
-                            </Link>
-                        )}
-                    </div>
+                <div className="flex gap-3">
+                    <Link
+                        href="/search"
+                        className="h-10 px-4 bg-[#1a2632] hover:bg-[#243445] text-white font-medium rounded-lg border border-[#2b3b4c] transition-colors flex items-center gap-2"
+                    >
+                        <span className="material-symbols-outlined text-lg">search</span>
+                        <span className="hidden sm:inline">Buscar</span>
+                    </Link>
+                    <button className="h-10 px-5 bg-[#137fec] hover:bg-blue-600 text-white font-bold rounded-lg shadow-sm transition-colors flex items-center gap-2">
+                        <span className="material-symbols-outlined text-lg">add</span>
+                        <span className="hidden sm:inline">Nueva Alerta</span>
+                    </button>
                 </div>
+            </div>
 
-                {/* Search Panel */}
-                <SearchPanel
-                    userPlan={userPlan}
-                    initialLicitaciones={licitaciones || []}
-                />
-            </main>
+            <StatsGrid
+                activeTenders={stats.activeTenders}
+                upcomingDeadlines={stats.upcomingDeadlines}
+                submittedProposals={stats.submittedProposals}
+                winRate={stats.winRate}
+            />
 
-            {/* Footer */}
-            <footer className="border-t border-slate-200 bg-white mt-12 py-6">
-                <div className="container mx-auto px-4 text-center text-sm text-slate-500">
-                    <p>© 2026 LicitaFlash. Todos los derechos reservados.</p>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+                <div className="xl:col-span-2">
+                    <RecommendedTenders tenders={recommendedLicitaciones || []} />
                 </div>
+                <div className="xl:col-span-1">
+                    <ActivityFeed activities={recentActivities} />
+                </div>
+            </div>
+
+            <footer className="mt-8 pt-6 border-t border-[#2b3b4c] text-center">
+                <p className="text-[#94a3b8] text-sm">
+                    © 2026 LicitaFlash. Todos los derechos reservados.
+                </p>
             </footer>
         </div>
-    )
+    );
 }

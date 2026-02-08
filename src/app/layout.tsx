@@ -15,8 +15,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <body className={`${inter.className} antialiased bg-slate-50`}>
+    <html lang="es" className="dark">
+      <head>
+        {/* Material Symbols Icons */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        />
+      </head>
+      <body className={`${inter.className} antialiased bg-[#101922] text-white`}>
         {children}
       </body>
     </html>
